@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Tsk>
+
+<ul>
+    @foreach (var t in Model)
+    {
+    <li>
+        <a asp-action="Index" asp-controller="Home" asp-route-id="@t.Id">@t.Name</a>
+
+        @if (t.Children.Any())
+        {
+            @await Html.PartialAsync("UlPartitial", t.Children)
+        }
+
+    </li>
+    }
+</ul>
+
