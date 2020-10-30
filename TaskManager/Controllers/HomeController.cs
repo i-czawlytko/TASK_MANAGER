@@ -15,21 +15,19 @@ namespace TaskManager.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private ITasksRepository repository;
+        private StatusesRepository stat_repos;
 
-        public HomeController(ILogger<HomeController> logger, ITasksRepository repo)
+        public HomeController(ILogger<HomeController> logger, ITasksRepository repo, StatusesRepository st_repo)
         {
             _logger = logger;
             repository = repo;
+            stat_repos = st_repo;
         }
 
         public IActionResult Index(int id = 0)
         {
             ViewBag.current_task_id = id;
-            return View(new TasksViewModel { 
-                Tasks = repository.GetInitialElements(),
-                CurrentTask = repository.GetTask(id),
-                SubTasks = repository.GetAllSubTasks(id) 
-            } );
+            return View(repository.GetInitialElements());
         }
 
         public IActionResult Create(int id)
@@ -53,10 +51,10 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangeStatus(int task_id, Statuses status)
+        public JsonResult ChangeStatus(int task_id, Statuses status)
         {
             repository.ChangeStatus(task_id, status);
-            return RedirectToAction("Index");
+            return Json(task_id);
         }
 
         public IActionResult Privacy()
@@ -80,6 +78,28 @@ namespace TaskManager.Controllers
             var tsks = repository.GetAllSubTasks(TaskId);
             var clean = tsks.Select(u => new { id = u.Id, name = u.Name });
             var res = Json(clean);
+            return res;
+        }
+
+        public JsonResult TaskToAjax(int TaskId)
+        {
+            var Current_Task = repository.GetTask(TaskId);
+            var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name });
+            var _Available = stat_repos.StCollect.FirstOrDefault(s => s.Status == Current_Task.Status).AvailableStatuses;
+
+            var res = Json(new
+            {
+                current_task = new {
+                id = Current_Task.Id, 
+                name = Current_Task.Name,
+                desc = Current_Task.Description,
+                status = stat_repos.StatusDict[Current_Task.Status]
+                },
+
+                sub_tasks = SubTasks,
+                available = _Available
+            });
+
             return res;
         }
     }

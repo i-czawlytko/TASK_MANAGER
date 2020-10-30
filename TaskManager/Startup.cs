@@ -29,6 +29,8 @@ namespace TaskManager
             services.AddDbContext<TaskDbContext>(options => options.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<ITasksRepository, EFTasksRepository>();
+
+            services.AddTransient<StatusesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

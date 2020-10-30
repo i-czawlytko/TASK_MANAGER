@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+
 
 namespace TaskManager.Models
 {
@@ -17,7 +19,9 @@ namespace TaskManager.Models
     {
         public int Id { get; set; }
         public int? ParentId { get; set; }
+
         public Tsk Parent { get; set; }
+
         public IEnumerable<Tsk> Children { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

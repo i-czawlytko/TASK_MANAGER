@@ -2,21 +2,74 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManager.Models;
+using TaskManager.ViewModels;
 
 namespace TaskManager.Models
 {
-    public class FakeTasksRepository //: ITasksRepository
+    public class StatusesRepository
     {
-        public IQueryable<Tsk> Tasks => new List<Tsk>
+        public List<StatusesInfo> StCollect => new List<StatusesInfo>
         {
-            new Tsk {Name="Сложная задача",Description="Задача задач", Executors="Мастера",CreateDate=DateTime.Now,ComplectionDate=null,Status=Statuses.Assigned,ParentId=null},
-            new Tsk {Name="Задача по-проще",Description="Задачка", Executors="Среднячки",CreateDate=DateTime.Now,ComplectionDate=null,Status=Statuses.Assigned,ParentId=1},
-            new Tsk {Name="Еще одна задача по-проще",Description="Еще задачка", Executors="Среднячки",CreateDate=DateTime.Now,ComplectionDate=null,Status=Statuses.Assigned,ParentId=1},
-            new Tsk {Name="Простейшая задачка",Description="Задаченька", Executors="Простачки",CreateDate=DateTime.Now,ComplectionDate=null,Status=Statuses.Assigned,ParentId=2},
-            new Tsk {Name="Еще одна простейшая задачка",Description="Еще задаченька", Executors="Простачки",CreateDate=DateTime.Now,ComplectionDate=null,Status=Statuses.Assigned,ParentId=2}
-        }.AsQueryable<Tsk>();
-        public void AddTask(Tsk tsk) { }
+                    new StatusesInfo
+                    {
+                        Status = Statuses.Assigned,
+                        AvailableStatuses = new List<StatusViewModel>
+                        {
+                            new StatusViewModel
+                            {
+                                StatusId= 1,
+                                Title = "Выполняется"
+                            }
+                        }
+                    },
 
-        public IEnumerable<Tsk> GetAll() { return null; }
+                    new StatusesInfo
+                    {
+                        Status = Statuses.InProgress,
+                        AvailableStatuses = new List<StatusViewModel>
+                        {
+                            new StatusViewModel
+                            {
+                                StatusId= 2,
+                                Title = "Отложена"
+                            },
+                            new StatusViewModel
+                            {
+                                StatusId= 3,
+                                Title = "Завершена"
+                            }
+                        }
+                    },
+
+                    new StatusesInfo
+                    {
+                        Status = Statuses.Suspended,
+                        AvailableStatuses = new List<StatusViewModel>
+                        {
+                            new StatusViewModel
+                            {
+                                StatusId= 1,
+                                Title = "Выполняется"
+                            }
+                        }
+                    },
+
+                    new StatusesInfo
+                    {
+                        Status = Statuses.Completed,
+                        AvailableStatuses = new List<StatusViewModel> {}
+                    }
+
+        };
+
+        public Dictionary<Statuses, string> StatusDict => new Dictionary<Statuses, string>
+        {
+            {Statuses.Assigned, "Назначена" },
+            {Statuses.InProgress, "Выполняется" },
+            {Statuses.Suspended, "Отложена" },
+            {Statuses.Completed, "Завершена" }
+        };
     }
+
 }

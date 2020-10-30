@@ -8,9 +8,10 @@ namespace TaskManager.ViewModels
 {
     public class TasksViewModel
     {
-        public IEnumerable<Tsk> Tasks { get; set; }
+        //public IEnumerable<Tsk> Tasks { get; set; }
         public Tsk CurrentTask { get; set; }
 
-        public IEnumerable<Tsk> SubTasks { get; set; }
+        public IEnumerable<StatusViewModel> Available { get; set; }
+        //public IEnumerable<Tsk> SubTasks { get; set; }
     }
 }

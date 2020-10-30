@@ -1,4 +1,4 @@
-﻿@model TaskManager.ViewModels.TasksViewModel
+﻿@model IEnumerable<Tsk>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -12,7 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-5 bg-warning p-3 m-3">
-            @await Html.PartialAsync("UlPartitial", Model.Tasks)
+            @await Html.PartialAsync("UlPartitial", Model)
         </div>
 
         <div class="col-sm-5 bg-success p-3 m-3">
@@ -23,19 +23,102 @@
 
 
 @*<div>
-    @await Html.PartialAsync("ContentPartitial", Model.CurrentTask)
-</div>
+        @await Html.PartialAsync("ContentPartitial", Model.CurrentTask)
+    </div>
 
-<div>
-    @await Html.PartialAsync("SubTasksPartitial", Model.SubTasks)
-</div>*@
+    <div>
+        @await Html.PartialAsync("SubTasksPartitial", Model.SubTasks)
+    </div>*@
 
+
+@*@section scripts {
+        <script type="text/javascript">
+            function getTaskInfoUsingAjax(taskid) {
+                $.ajax({
+                    url: '@Url.Action("GetTaskAjax")',
+                    type: "GET",
+                    data: { TaskId: taskid },
+                    dataType: "json",
+                    success: function (response) {
+
+                        $('#content_place').empty();
+
+                        $('<option>', {
+                            'class': 'stat_opt',
+                            text: 'Назначена',
+                            'value': 0
+                        }).appendTo("#content_place");
+
+                        $('<option>', {
+                            'class': 'stat_opt',
+                            text: 'Выполняется',
+                            'value': 1
+                        }).appendTo("#content_place");
+
+                        $('<option>', {
+                            'class': 'stat_opt',
+                            text: 'Отложена',
+                            'value': 2
+                        }).appendTo("#content_place");
+
+                        $('<option>', {
+                            'class': 'stat_opt',
+                            text: 'Завершена',
+                            'value': 3
+                        }).appendTo("#content_place");
+
+
+                        $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" class="form-control d-inline"></select>');
+
+                        $('<button>', {
+                            'class': 'stat_btn',
+                            text: 'Сохранить',
+                            click: function () {
+                                $.ajax({
+                                    url: '@Url.Action("ChangeStatus")', //ChangeStatus(int task_id, Statuses status)
+                                    type: "POST",
+                                    data: { task_id: response.id, status: $('#stat_select').val()},
+                                    dataType: "json",
+                                });
+                            }
+                        }).appendTo("#content_place");
+
+
+
+                        $('#content_place').append('<h4>Информация о задаче: <h4>');
+                        addInfoRow("ID", response.id, '#content_place');
+                        addInfoRow("Наименование", response.name, '#content_place');
+                        addInfoRow("Описание", response.description, '#content_place');
+                        addInfoRow("Статус", response.status, '#content_place');
+                    }
+                });
+
+                $.ajax({
+                    url: '@Url.Action("GetSubTasksAjax")',
+                    type: "GET",
+                    data: { TaskId: taskid },
+                    dataType: "json",
+                    success: function (response) {
+                        $('#subtasks_place').empty();
+                        $('#subtasks_place').append('<h4>Список подзадач: </h4>');
+                        response.forEach(function (sbtsk) {
+                            addInfoRow(sbtsk.id, sbtsk.name, '#subtasks_place');
+                        });
+                    }
+                });
+
+            }
+            function addInfoRow(title, content, place) {
+                $(place).append('<p>' + title + ': ' + content + '</p>');
+        }
+        </script>
+    }*@
 
 @section scripts {
     <script type="text/javascript">
         function getTaskInfoUsingAjax(taskid) {
             $.ajax({
-                url: '@Url.Action("GetTaskAjax")',
+                url: '@Url.Action("TaskToAjax")',
                 type: "GET",
                 data: { TaskId: taskid },
                 dataType: "json",
@@ -43,73 +126,59 @@
 
                     $('#content_place').empty();
 
-                    $('<option>', {
-                        'class': 'stat_opt',
-                        text: 'Назначена',
-                        'value': 0
-                    }).appendTo("#content_place");
+                    $('#content_place').append('<h5>Информация о задаче: <h5>');
+                    addInfoRow("ID", response.current_task.id, '#content_place');
+                    addInfoRow("Наименование", response.current_task.name, '#content_place');
+                    addInfoRow("Описание", response.current_task.desc, '#content_place');
+                    addInfoRow("Статус", response.current_task.status, '#content_place');
 
-                    $('<option>', {
-                        'class': 'stat_opt',
-                        text: 'Выполняется',
-                        'value': 1
-                    }).appendTo("#content_place");
-
-                    $('<option>', {
-                        'class': 'stat_opt',
-                        text: 'Отложена',
-                        'value': 2
-                    }).appendTo("#content_place");
-
-                    $('<option>', {
-                        'class': 'stat_opt',
-                        text: 'Завершена',
-                        'value': 3
-                    }).appendTo("#content_place");
+                    $('#content_place').append('<h5>Изменить статус задачи на: </h5>');
+                    response["available"].forEach(function (data) {
+                        addStatusOption(data.title, data.statusId);
+                    });
 
 
                     $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" class="form-control d-inline"></select>');
 
                     $('<button>', {
-                        'class': 'stat_btn',
+                        'class': 'stat_btn btn btn-sm btn-primary d-block mt-2',
                         text: 'Сохранить',
                         click: function () {
                             $.ajax({
                                 url: '@Url.Action("ChangeStatus")', //ChangeStatus(int task_id, Statuses status)
                                 type: "POST",
-                                data: { task_id: response.id, status: $('#stat_select').val()},
+                                data: { task_id: response.current_task.id, status: $('#stat_select').val()},
                                 dataType: "json",
+                                success: function (changed_task_id) {
+                                    getTaskInfoUsingAjax(changed_task_id);
+                                }
                             });
                         }
                     }).appendTo("#content_place");
 
 
-
-                    $('#content_place').append('<h4>Информация о задаче: <h4>');
-                    addInfoRow("ID", response.id, '#content_place');
-                    addInfoRow("Наименование", response.name, '#content_place');
-                    addInfoRow("Описание", response.description, '#content_place');
-                    addInfoRow("Статус", response.status, '#content_place');
-                }
-            });
-
-            $.ajax({
-                url: '@Url.Action("GetSubTasksAjax")',
-                type: "GET",
-                data: { TaskId: taskid },
-                dataType: "json",
-                success: function (response) {
                     $('#subtasks_place').empty();
-                    $('#subtasks_place').append('<h4>Список подзадач: </h4>');
-                    response.forEach(function (sbtsk) {
+                    $('#subtasks_place').append('<h5>Список подзадач: </h5>');
+                    response.sub_tasks.forEach(function (sbtsk) {
                         addInfoRow(sbtsk.id, sbtsk.name, '#subtasks_place');
                     });
                 }
             });
 
         }
+
         function addInfoRow(title, content, place) {
-            $(place).append('<p>' + title + ': ' + content + '</p>');
-    }
+            $(place).append('<div>' + title + ': ' + content + '</div>');
+        }
+
+        function addStatusOption(title, id) {
+            $('<option>', {
+                'class': 'stat_opt',
+                text: title,
+                'value': id
+            }).appendTo("#content_place");
+        }
+
+
     </script>
 }
