@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<Tsk>
 
+
 <ul>
     @foreach (var t in Model)
     {
-    <li>
-        <a asp-action="Index" asp-controller="Home" asp-route-id="@t.Id">@t.Name</a>
+    <li style="list-style-type: none" class="m-2">
+        <i class="fa fa-suitcase" aria-hidden="true"></i>
+        <input type="button" value="@t.Name" class="btn btn-sm btn-outline-dark" onclick="getTaskInfoUsingAjax(@t.Id)">
 
         @if (t.Children.Any())
         {

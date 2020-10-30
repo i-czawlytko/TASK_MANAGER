@@ -10,6 +10,7 @@ using TaskManager.ViewModels;
 
 namespace TaskManager.Controllers
 {
+    //[Route("demo")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -67,6 +68,19 @@ namespace TaskManager.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public JsonResult GetTaskAjax(int TaskId)
+        {
+            return Json(repository.GetTask(TaskId));
+        }
+
+        public JsonResult GetSubTasksAjax(int TaskId)
+        {
+            var tsks = repository.GetAllSubTasks(TaskId);
+            var clean = tsks.Select(u => new { id = u.Id, name = u.Name });
+            var res = Json(clean);
+            return res;
         }
     }
 }
