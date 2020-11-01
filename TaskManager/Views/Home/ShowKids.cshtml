@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Tsk>
+
+@foreach (var t in Model)
+{
+    <p>id: @t.Id, name: @t.Name, parentid : @t.ParentId</p>
+    @if (t.Children != null)
+    {
+        @foreach (var c in t.Children)
+        {
+            <div>@c.Id, @c.Name, @c.ParentId</div>
+        }
+    }
+
+}

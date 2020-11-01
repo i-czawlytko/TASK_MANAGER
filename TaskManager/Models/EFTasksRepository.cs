@@ -17,13 +17,21 @@ namespace TaskManager.Models
         public IQueryable<Tsk> Tasks => context.Tasks;
         public void AddTask(Tsk tsk) 
         {
-            context.Tasks.Add(tsk);
+            if(tsk.Id == 0)
+            {
+                context.Tasks.Add(tsk);
+            }
+            else
+            {
+                context.Tasks.Update(tsk);
+            }
+            
             context.SaveChanges();
         }
 
         public Tsk GetTask(int id)
         {
-            return context.Tasks.FirstOrDefault(x => x.Id == id);
+            return context.Tasks.Include(t => t.Children).FirstOrDefault(x => x.Id == id);
         }
 
         public void DeleteTask(int id)
@@ -83,6 +91,10 @@ namespace TaskManager.Models
 
             if (tsk != null)
             {
+                if (status == Statuses.Completed)
+                {
+                    tsk.ComplectionDate = DateTime.Now;
+                }
                 tsk.Status = status;
                 context.SaveChanges();
             }

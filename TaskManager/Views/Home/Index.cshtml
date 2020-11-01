@@ -4,115 +4,18 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
-
 <div class="container">
     <div class="row">
-        <div class="col-sm-5 bg-warning p-3 m-3">
+        <div class="col-sm-4 bg-warning p-3 m-3">
+            <a asp-action="Create" class="btn btn-sm btn-primary mb-3">Новая задача</a>
             @await Html.PartialAsync("UlPartitial", Model)
         </div>
 
-        <div class="col-sm-5 bg-success p-3 m-3">
+        <div class="col-sm-7 bg-success p-3 m-3">
             @await Html.PartialAsync("AjaxPartitial")
         </div>
     </div>
 </div>
-
-
-@*<div>
-        @await Html.PartialAsync("ContentPartitial", Model.CurrentTask)
-    </div>
-
-    <div>
-        @await Html.PartialAsync("SubTasksPartitial", Model.SubTasks)
-    </div>*@
-
-
-@*@section scripts {
-        <script type="text/javascript">
-            function getTaskInfoUsingAjax(taskid) {
-                $.ajax({
-                    url: '@Url.Action("GetTaskAjax")',
-                    type: "GET",
-                    data: { TaskId: taskid },
-                    dataType: "json",
-                    success: function (response) {
-
-                        $('#content_place').empty();
-
-                        $('<option>', {
-                            'class': 'stat_opt',
-                            text: 'Назначена',
-                            'value': 0
-                        }).appendTo("#content_place");
-
-                        $('<option>', {
-                            'class': 'stat_opt',
-                            text: 'Выполняется',
-                            'value': 1
-                        }).appendTo("#content_place");
-
-                        $('<option>', {
-                            'class': 'stat_opt',
-                            text: 'Отложена',
-                            'value': 2
-                        }).appendTo("#content_place");
-
-                        $('<option>', {
-                            'class': 'stat_opt',
-                            text: 'Завершена',
-                            'value': 3
-                        }).appendTo("#content_place");
-
-
-                        $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" class="form-control d-inline"></select>');
-
-                        $('<button>', {
-                            'class': 'stat_btn',
-                            text: 'Сохранить',
-                            click: function () {
-                                $.ajax({
-                                    url: '@Url.Action("ChangeStatus")', //ChangeStatus(int task_id, Statuses status)
-                                    type: "POST",
-                                    data: { task_id: response.id, status: $('#stat_select').val()},
-                                    dataType: "json",
-                                });
-                            }
-                        }).appendTo("#content_place");
-
-
-
-                        $('#content_place').append('<h4>Информация о задаче: <h4>');
-                        addInfoRow("ID", response.id, '#content_place');
-                        addInfoRow("Наименование", response.name, '#content_place');
-                        addInfoRow("Описание", response.description, '#content_place');
-                        addInfoRow("Статус", response.status, '#content_place');
-                    }
-                });
-
-                $.ajax({
-                    url: '@Url.Action("GetSubTasksAjax")',
-                    type: "GET",
-                    data: { TaskId: taskid },
-                    dataType: "json",
-                    success: function (response) {
-                        $('#subtasks_place').empty();
-                        $('#subtasks_place').append('<h4>Список подзадач: </h4>');
-                        response.forEach(function (sbtsk) {
-                            addInfoRow(sbtsk.id, sbtsk.name, '#subtasks_place');
-                        });
-                    }
-                });
-
-            }
-            function addInfoRow(title, content, place) {
-                $(place).append('<p>' + title + ': ' + content + '</p>');
-        }
-        </script>
-    }*@
 
 @section scripts {
     <script type="text/javascript">
@@ -127,21 +30,31 @@
                     $('#content_place').empty();
 
                     $('#content_place').append('<h5>Информация о задаче: <h5>');
-                    addInfoRow("ID", response.current_task.id, '#content_place');
-                    addInfoRow("Наименование", response.current_task.name, '#content_place');
-                    addInfoRow("Описание", response.current_task.desc, '#content_place');
-                    addInfoRow("Статус", response.current_task.status, '#content_place');
 
-                    $('#content_place').append('<h5>Изменить статус задачи на: </h5>');
+                    $('<table>', {
+                        'class': 'table table-striped table-dark',
+                        'id' : 'atr_table'
+                    }).appendTo("#content_place");
+                    $('#atr_table').append('<thead><tr><th scope="col">Атрибут</th><th scope="col">Значение</th></tr></thead>');
+                    $('<tbody>', {
+                        'id': 'atr_table_body'
+                    }).appendTo("#atr_table");
+                    addAtrTableRow("ID", response.current_task.id, '#atr_table_body');
+                    addAtrTableRow("Наименование", response.current_task.name, '#atr_table_body');
+                    addAtrTableRow("Статус", response.current_task.status, '#atr_table_body');
+                    addAtrTableRow("Трудоемкость", response.current_task.total_labor, '#atr_table_body');
+                    addAtrTableRow("Дата завершения", response.current_task.completion_date, '#atr_table_body');
+
+                    $('#content_place').append('<div class="stat_elem d-inline m-2">Изменить статус на: </div>');
+
                     response["available"].forEach(function (data) {
                         addStatusOption(data.title, data.statusId);
                     });
-
-
-                    $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" class="form-control d-inline"></select>');
+                    $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" form-control-sm"></select>');
+                    $('#stat_select').wrapAll('<div class="form-group stat_elem d-inline m-2"></div>');
 
                     $('<button>', {
-                        'class': 'stat_btn btn btn-sm btn-primary d-block mt-2',
+                        'class': 'stat_elem btn btn-sm btn-primary d-inline m-2',
                         text: 'Сохранить',
                         click: function () {
                             $.ajax({
@@ -155,12 +68,21 @@
                             });
                         }
                     }).appendTo("#content_place");
+                    $('.stat_elem').wrapAll('<div class="bg-warning"></div>');
 
+                    $('#content_place').append('<h5 mt-4>Список подзадач: </h5>');
 
-                    $('#subtasks_place').empty();
-                    $('#subtasks_place').append('<h5>Список подзадач: </h5>');
+                    $('<table>', {
+                        'class': 'table table-striped table-dark',
+                        'id': 'sbtsk_table'
+                    }).appendTo("#content_place");
+                    $('#sbtsk_table').append('<thead><tr><th scope="col">ID</th><th scope="col">Наименование</th><th scope="col">Трудоемкость</th></tr></thead>');
+                    $('<tbody>', {
+                        'id': 'atr_table_body'
+                    }).appendTo("#sbtsk_table");
+
                     response.sub_tasks.forEach(function (sbtsk) {
-                        addInfoRow(sbtsk.id, sbtsk.name, '#subtasks_place');
+                        addSubTasksTableRow(sbtsk.id, sbtsk.name, sbtsk.laboriousness, '#sbtsk_table');
                     });
                 }
             });
@@ -169,6 +91,12 @@
 
         function addInfoRow(title, content, place) {
             $(place).append('<div>' + title + ': ' + content + '</div>');
+        }
+        function addAtrTableRow(atr, vl, place) {
+            $(place).append('<tr><td>' + atr + '</td><td>'+vl+'</td></tr>');
+        }
+        function addSubTasksTableRow(t_id, t_name, t_labor, place) {
+            $(place).append('<tr><td>' + t_id + '</td><td>' + t_name + '</td><td>' + t_labor + '</td></tr>');
         }
 
         function addStatusOption(title, id) {

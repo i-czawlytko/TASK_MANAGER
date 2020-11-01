@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TaskManager.Migrations
 {
-    public partial class good_init_migration : Migration
+    public partial class init_migration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,11 +14,12 @@ namespace TaskManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ParentId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Executors = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 30, nullable: false),
+                    Description = table.Column<string>(nullable: false),
+                    Executors = table.Column<string>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Status = table.Column<int>(nullable: false),
+                    Laboriousness = table.Column<int>(nullable: false),
                     ComplectionDate = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>

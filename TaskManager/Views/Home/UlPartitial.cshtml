@@ -1,12 +1,18 @@
 ﻿@model IEnumerable<Tsk>
 
 
-<ul>
+<ul style="margin-left: 10px; padding: 0;">
     @foreach (var t in Model)
     {
     <li style="list-style-type: none" class="m-2">
         <i class="fa fa-suitcase" aria-hidden="true"></i>
         <input type="button" value="@t.Name" class="btn btn-sm btn-dark" onclick="getTaskInfoUsingAjax(@t.Id)">
+        <a asp-action="Create" asp-route-id="@t.Id">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </a>
+        <a asp-action="Edit" asp-route-id="@t.Id">
+            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+        </a>
 
         @if (t.Children.Any())
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,18 +30,27 @@ namespace TaskManager.Controllers
             ViewBag.current_task_id = id;
             return View(repository.GetInitialElements());
         }
-
-        public IActionResult Create(int id)
+        public IActionResult Edit(int id)
+        {
+            ViewBag.Method = nameof(Edit);
+            return View(repository.GetTask(id));
+        }
+        [HttpPost]
+        public IActionResult Edit(Tsk tsk)
+        {
+            if(ModelState.IsValid)
+            {
+                repository.AddTask(tsk);
+                TempData["message"] = "Задача успешно отредактирована";
+                return RedirectToAction("Index");
+            }
+            return View(tsk);
+        }
+        public IActionResult Create(int? id)
         {
             ViewBag.ParentId = id;
-            return View(new Tsk() );
-        }
-
-        [HttpPost]
-        public IActionResult Create(Tsk tsk)
-        {
-            repository.AddTask(tsk);
-            return RedirectToAction("Index");
+            ViewBag.Method = nameof(Create);
+            return View("Edit", new Tsk());
         }
 
         [HttpPost]
@@ -68,23 +78,10 @@ namespace TaskManager.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public JsonResult GetTaskAjax(int TaskId)
-        {
-            return Json(repository.GetTask(TaskId));
-        }
-
-        public JsonResult GetSubTasksAjax(int TaskId)
-        {
-            var tsks = repository.GetAllSubTasks(TaskId);
-            var clean = tsks.Select(u => new { id = u.Id, name = u.Name });
-            var res = Json(clean);
-            return res;
-        }
-
         public JsonResult TaskToAjax(int TaskId)
         {
             var Current_Task = repository.GetTask(TaskId);
-            var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name });
+            var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name, laboriousness = u.Laboriousness });
             var _Available = stat_repos.StCollect.FirstOrDefault(s => s.Status == Current_Task.Status).AvailableStatuses;
 
             var res = Json(new
@@ -93,7 +90,9 @@ namespace TaskManager.Controllers
                 id = Current_Task.Id, 
                 name = Current_Task.Name,
                 desc = Current_Task.Description,
-                status = stat_repos.StatusDict[Current_Task.Status]
+                status = stat_repos.StatusDict[Current_Task.Status],
+                completion_date = Current_Task.ComplectionDate?.ToString("g") ?? "Не завершена",
+                total_labor = repository.GetAllSubTasks(TaskId).Sum(t => t.Laboriousness) + Current_Task.Laboriousness
                 },
 
                 sub_tasks = SubTasks,
@@ -101,6 +100,12 @@ namespace TaskManager.Controllers
             });
 
             return res;
+        }
+
+        public IActionResult ShowKids(int id)
+        {
+            
+            return View(repository.GetTask(id).Children);
         }
     }
 }
