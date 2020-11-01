@@ -84,19 +84,39 @@ namespace TaskManager.Models
 
             return kids_;
         }
-
         public void ChangeStatus(int task_id, Statuses status)
         {
-            var tsk = context.Tasks.FirstOrDefault(x => x.Id == task_id);
+            changingStatus(task_id, status);
+            context.SaveChanges();
+        }
+        private void changingStatus(int task_id, Statuses status)
+        {
+            var tsk = context.Tasks.Include(t => t.Children).FirstOrDefault(x => x.Id == task_id);
+
+            if(status == Statuses.Completed && tsk.Children.Any())
+            {
+                foreach(var c in tsk.Children)
+                {
+                    changingStatus(c.Id, Statuses.Completed);
+                }
+            }
 
             if (tsk != null)
             {
-                if (status == Statuses.Completed)
+                if (tsk.Status == Statuses.Assigned && (status == Statuses.Suspended || status == Statuses.Completed)) throw new ArgumentException();
+                else if (tsk.Status == Statuses.InProgress && (status == Statuses.Assigned)) throw new ArgumentException();
+                else if (tsk.Status == Statuses.Suspended && (status == Statuses.Assigned || status == Statuses.Completed)) throw new ArgumentException();
+                else if (tsk.Status == Statuses.Completed && (status == Statuses.Assigned || status == Statuses.Suspended)) throw new ArgumentException();
+                else
                 {
-                    tsk.ComplectionDate = DateTime.Now;
+                    if (status == Statuses.Completed)
+                    {
+                        tsk.ComplectionDate = DateTime.Now;
+                    }
+                    tsk.Status = status;
+                    //context.SaveChanges();
                 }
-                tsk.Status = status;
-                context.SaveChanges();
+
             }
         }
     }

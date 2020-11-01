@@ -23,7 +23,7 @@ namespace TaskManager.Models
 
         public Tsk Parent { get; set; }
 
-        public virtual IEnumerable<Tsk> Children { get; set; }
+        public IEnumerable<Tsk> Children { get; set; }
 
         [MaxLength(30, ErrorMessage ="Слишком длинное наименование")]
         [Required(ErrorMessage ="Пожалуйста, введите название")]

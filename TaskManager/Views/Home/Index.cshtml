@@ -64,6 +64,10 @@
                                 dataType: "json",
                                 success: function (changed_task_id) {
                                     getTaskInfoUsingAjax(changed_task_id);
+                                },
+                                error: function () {
+                                    $('#err_msg').remove();
+                                    $('#content_place').prepend('<div id="err_msg" class="alert alert-warning">Нельзя завершить задачу</div>');
                                 }
                             });
                         }

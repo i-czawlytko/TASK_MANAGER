@@ -6,12 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TaskManager.Infrastructure;
 using TaskManager.Models;
 using TaskManager.ViewModels;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace TaskManager.Controllers
 {
-    //[Route("demo")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -63,8 +65,18 @@ namespace TaskManager.Controllers
         [HttpPost]
         public JsonResult ChangeStatus(int task_id, Statuses status)
         {
-            repository.ChangeStatus(task_id, status);
-            return Json(task_id);
+            try
+            {
+                repository.ChangeStatus(task_id, status);
+                return Json(task_id);
+            }
+            catch
+            {
+                return new JsonResult(null)
+                {
+                    StatusCode = (int)HttpStatusCode.BadGateway
+                };
+            }
         }
 
         public IActionResult Privacy()
