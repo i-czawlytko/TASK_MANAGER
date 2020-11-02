@@ -1,51 +1,59 @@
-﻿@model Tsk
-<div class="home-inner container bg-light">
-    <form asp-action="Edit" method="post" enctype="multipart/form-data">
-        <!-- TEXT FIELD GROUPS -->
-        @if (ViewBag.Method == "Create")
-        {
-            <input type="hidden" asp-for="Id" value="0" />
-            <input type="hidden" asp-for="ParentId" value="@ViewBag.ParentId" />
-            <input type="hidden" asp-for="Status" value="@Statuses.Assigned" />
-            <input type="hidden" asp-for="CreateDate" value="@DateTime.Now" />
-        }
-        else if (ViewBag.Method == "Edit")
-        {
-            <input type="hidden" asp-for="Id" value="@Model.Id" />
-            <input type="hidden" asp-for="ParentId" value="@Model.ParentId" />
-            <input type="hidden" asp-for="Status" value="@Model.Status" />
-            <input type="hidden" asp-for="CreateDate" value="@Model.CreateDate" />
-            <input type="hidden" asp-for="ComplectionDate" value="@Model.ComplectionDate" />
-            <input type="hidden" asp-for="ActualInterval" value="@Model.ActualInterval" />
-        }
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
-        <div class="form-group">
-            <label>Наимнование</label>
-            <div><span asp-validation-for="Name"></span></div>
-            <input asp-for="Name" class="form-control" type="text" placeholder="Дайте задаче название">
+@model Tsk
+<div class="home-inner container">
+    <div class="row">
+        <div class="col-sm-7 bg-light mx-auto">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data" class="p-2">
+                <!-- TEXT FIELD GROUPS -->
+                @if (ViewBag.Method == "Create")
+                {
+                    <input type="hidden" asp-for="Id" value="0" />
+                    <input type="hidden" asp-for="ParentId" value="@ViewBag.ParentId" />
+                    <input type="hidden" asp-for="Status" value="@Statuses.Assigned" />
+                    <input type="hidden" asp-for="CreateDate" value="@DateTime.Now" />
+                }
+                else if (ViewBag.Method == "Edit")
+                {
+                    <input type="hidden" asp-for="Id" value="@Model.Id" />
+                    <input type="hidden" asp-for="ParentId" value="@Model.ParentId" />
+                    <input type="hidden" asp-for="Status" value="@Model.Status" />
+                    <input type="hidden" asp-for="CreateDate" value="@Model.CreateDate" />
+                    <input type="hidden" asp-for="ComplectionDate" value="@Model.ComplectionDate" />
+                    <input type="hidden" asp-for="ActualInterval" value="@Model.ActualInterval" />
+                }
+
+                <div class="form-group">
+                    <label>@Localizer["NameLabel"]</label>
+                    <div><span asp-validation-for="Name"></span></div>
+                    <input asp-for="Name" class="form-control" type="text" placeholder="@Localizer["NamePH"]">
+                </div>
+                <div class="form-group">
+                    <label>@Localizer["ExecLabel"]</label>
+                    <div><span asp-validation-for="Executors"></span></div>
+                    <input asp-for="Executors" class="form-control" type="text" placeholder="@Localizer["ExecPH"]">
+                </div>
+
+                <div class="form-group">
+                    <label>@Localizer["LaborLabel"]</label>
+                    <div><span asp-validation-for="Laboriousness"></span></div>
+                    <input asp-for="Laboriousness" class="form-control" type="text" placeholder="@Localizer["LaborPH"]">
+                </div>
+
+                <!-- TEXTAREA -->
+                <div class="form-group">
+                    <label>@Localizer["DescLabel"]</label>
+                    <div><span asp-validation-for="Description"></span></div>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <br>
+
+                <button class="btn btn-primary m-2 p-2" type="submit">@Localizer["SaveButt"]</button>
+                <a asp-action="Index" class="btn btn-primary m-2 p-2">@Localizer["CancelButt"]</a>
+            </form>
         </div>
-        <div class="form-group">
-            <label>Исполнители</label>
-            <div><span asp-validation-for="Executors"></span></div>
-            <input asp-for="Executors" class="form-control" type="text" placeholder="Назначьте исполнителей">
-        </div>
-
-        <div class="form-group">
-            <label>Трудоемкость</label>
-            <div><span asp-validation-for="Laboriousness"></span></div>
-            <input asp-for="Laboriousness" class="form-control" type="text" placeholder="Укажите трудоемкость задачи">
-        </div>
-
-        <!-- TEXTAREA -->
-        <div class="form-group">
-            <label>Описание задачи</label>
-            <div><span asp-validation-for="Description"></span></div>
-            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-        </div>
-
-        <br>
-
-        <button class="btn btn-primary m-2" type="submit">Сохранить</button>
-        <a asp-action="Index" class="btn btn-primary m-2">Отмена</a>
-    </form>
+    </div>
 </div>
+

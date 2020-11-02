@@ -11,20 +11,23 @@ using TaskManager.Models;
 using TaskManager.ViewModels;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using Microsoft.Extensions.Localization;
 
 namespace TaskManager.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IStringLocalizer<HomeController> _localizer;
         private ITasksRepository repository;
         private StatusesRepository stat_repos;
 
-        public HomeController(ILogger<HomeController> logger, ITasksRepository repo, StatusesRepository st_repo)
+        public HomeController(ILogger<HomeController> logger, ITasksRepository repo, StatusesRepository st_repo, IStringLocalizer<HomeController> localizer)
         {
             _logger = logger;
             repository = repo;
             stat_repos = st_repo;
+            _localizer = localizer;
         }
 
         public IActionResult Index(int id = 0)
@@ -43,7 +46,7 @@ namespace TaskManager.Controllers
             if(ModelState.IsValid)
             {
                 repository.AddTask(tsk);
-                TempData["message"] = "Задача успешно отредактирована";
+                TempData["message"] = _localizer["TaskModified"].Value;
                 return RedirectToAction("Index");
             }
             return View(tsk);
@@ -68,26 +71,20 @@ namespace TaskManager.Controllers
             try
             {
                 repository.ChangeStatus(task_id, status);
-                return Json(task_id);
+                if (status == Statuses.Completed) TempData["message"] =  _localizer["TaskCompleted"].Value; 
+                return Json(new
+                {
+                    changed_taskid = task_id,
+                    new_status = status
+                });
             }
-            catch
+            catch(ChangeStatusException ex)
             {
                 return new JsonResult(null)
                 {
                     StatusCode = (int)HttpStatusCode.BadGateway
                 };
             }
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         public JsonResult TaskToAjax(int TaskId)
@@ -103,8 +100,11 @@ namespace TaskManager.Controllers
                 name = Current_Task.Name,
                 desc = Current_Task.Description,
                 status = stat_repos.StatusDict[Current_Task.Status],
+                statusid = (int)Current_Task.Status,
+                initial_date = Current_Task.CreateDate.ToString("g"),
                 completion_date = Current_Task.ComplectionDate?.ToString("g") ?? "Не завершена",
-                total_labor = repository.GetAllSubTasks(TaskId).Sum(t => t.Laboriousness) + Current_Task.Laboriousness
+                total_labor = repository.GetAllSubTasks(TaskId).Sum(t => t.Laboriousness) + Current_Task.Laboriousness,
+                total_actual_time = repository.GetAllSubTasks(TaskId).Sum(t => t.ActualInterval) + Current_Task.ActualInterval,
                 },
 
                 sub_tasks = SubTasks,
@@ -114,10 +114,5 @@ namespace TaskManager.Controllers
             return res;
         }
 
-        public IActionResult ShowKids(int id)
-        {
-            
-            return View(repository.GetTask(id).Children);
-        }
     }
 }

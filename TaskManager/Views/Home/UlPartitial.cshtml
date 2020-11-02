@@ -6,13 +6,30 @@
     {
     <li style="list-style-type: none" class="m-2">
         <i class="fa fa-suitcase" aria-hidden="true"></i>
+
         <input type="button" value="@t.Name" class="btn btn-sm btn-dark" onclick="getTaskInfoUsingAjax(@t.Id)">
-        <a asp-action="Create" asp-route-id="@t.Id">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-        </a>
-        <a asp-action="Edit" asp-route-id="@t.Id">
-            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
-        </a>
+
+        @if (t.Status != Statuses.Completed)
+        {
+            <a asp-action="Create" asp-route-id="@t.Id">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+            <a asp-action="Edit" asp-route-id="@t.Id">
+                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+            </a>
+        }
+        else
+        {
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+        }
+
+        @if (!t.Children.Any())
+        {
+            <form id="delete_form" class="d-inline" asp-action="Delete" method="post">
+                <input type="hidden" name="id" value="@t.Id" />
+                <i class="fa fa-minus-square" aria-hidden="true" onclick="delete_form.submit()" style="cursor:pointer;color:red"></i>
+            </form>
+        }
 
         @if (t.Children.Any())
         {

@@ -47,7 +47,7 @@ namespace TaskManager.Models
         public int Laboriousness { get; set; }
 
         [NotMapped]
-        public int? ActualInterval { get; set; }
+        public int? ActualInterval { get { return ComplectionDate?.Subtract(CreateDate.AddDays(-1)).Days ?? null; } }
 
         public DateTime? ComplectionDate { get; set; }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManager.Infrastructure;
 
 namespace TaskManager.Models
 {
@@ -36,9 +37,9 @@ namespace TaskManager.Models
 
         public void DeleteTask(int id)
         {
-            var tsk = context.Tasks.FirstOrDefault(x => x.Id == id);
+            var tsk = context.Tasks.Include(t => t.Children).FirstOrDefault(x => x.Id == id);
 
-            if (tsk != null)
+            if (tsk != null && !tsk.Children.Any())
             {
                 context.Tasks.Remove(tsk);
                 context.SaveChanges();
@@ -103,10 +104,10 @@ namespace TaskManager.Models
 
             if (tsk != null)
             {
-                if (tsk.Status == Statuses.Assigned && (status == Statuses.Suspended || status == Statuses.Completed)) throw new ArgumentException();
-                else if (tsk.Status == Statuses.InProgress && (status == Statuses.Assigned)) throw new ArgumentException();
-                else if (tsk.Status == Statuses.Suspended && (status == Statuses.Assigned || status == Statuses.Completed)) throw new ArgumentException();
-                else if (tsk.Status == Statuses.Completed && (status == Statuses.Assigned || status == Statuses.Suspended)) throw new ArgumentException();
+                if (tsk.Status == Statuses.Assigned && (status == Statuses.Suspended || status == Statuses.Completed)) throw new ChangeStatusException("Assigned task error");
+                else if (tsk.Status == Statuses.InProgress && (status == Statuses.Assigned)) throw new ChangeStatusException("InProgress task error");
+                else if (tsk.Status == Statuses.Suspended && (status == Statuses.Assigned || status == Statuses.Completed)) throw new ChangeStatusException("Suspended task error");
+                else if (tsk.Status == Statuses.Completed && (status == Statuses.Assigned || status == Statuses.Suspended)) throw new ChangeStatusException("Complited task error");
                 else
                 {
                     if (status == Statuses.Completed)
@@ -114,7 +115,6 @@ namespace TaskManager.Models
                         tsk.ComplectionDate = DateTime.Now;
                     }
                     tsk.Status = status;
-                    //context.SaveChanges();
                 }
 
             }

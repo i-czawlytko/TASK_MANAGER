@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Tsk>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model IEnumerable<Tsk>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -11,7 +14,7 @@
             @await Html.PartialAsync("UlPartitial", Model)
         </div>
 
-        <div class="col-sm-7 bg-success p-3 m-3">
+        <div class="col-sm-7 bg-primary p-3 m-3">
             @await Html.PartialAsync("AjaxPartitial")
         </div>
     </div>
@@ -28,74 +31,91 @@
                 success: function (response) {
 
                     $('#content_place').empty();
+                    $('#messages').remove();
 
-                    $('#content_place').append('<h5>Информация о задаче: <h5>');
+                    $('#content_place').append('<h5 class="text-light">@Localizer["TaskInfoTitle"] <h5>');
 
                     $('<table>', {
                         'class': 'table table-striped table-dark',
                         'id' : 'atr_table'
                     }).appendTo("#content_place");
-                    $('#atr_table').append('<thead><tr><th scope="col">Атрибут</th><th scope="col">Значение</th></tr></thead>');
+                    $('#atr_table').append('<thead><tr><th scope="col">@Localizer["TaskAttribute"]</th><th scope="col">@Localizer["TaskValue"]</th></tr></thead>');
                     $('<tbody>', {
                         'id': 'atr_table_body'
                     }).appendTo("#atr_table");
-                    addAtrTableRow("ID", response.current_task.id, '#atr_table_body');
-                    addAtrTableRow("Наименование", response.current_task.name, '#atr_table_body');
-                    addAtrTableRow("Статус", response.current_task.status, '#atr_table_body');
-                    addAtrTableRow("Трудоемкость", response.current_task.total_labor, '#atr_table_body');
-                    addAtrTableRow("Дата завершения", response.current_task.completion_date, '#atr_table_body');
+                    addAtrTableRow("@Localizer["IdAttr"]", response.current_task.id, '#atr_table_body');
+                    addAtrTableRow("@Localizer["NameAttr"]", response.current_task.name, '#atr_table_body');
+                    addAtrTableRow("@Localizer["StatusAttr"]", response.current_task.status, '#atr_table_body');
+                    addAtrTableRow("@Localizer["LaborAttr"]", response.current_task.total_labor, '#atr_table_body');
+                    addAtrTableRow("@Localizer["InitDateAttr"]", response.current_task.initial_date, '#atr_table_body');
+                    addAtrTableRow("@Localizer["CompDateAttr"]", response.current_task.completion_date, '#atr_table_body');
+                    addAtrTableRow("@Localizer["FactTimeAttr"]", response.current_task.total_actual_time ?? "Неизвестно", '#atr_table_body');
 
-                    $('#content_place').append('<div class="stat_elem d-inline m-2">Изменить статус на: </div>');
+                    $('#content_place').append('<div class="bg-light p-2 my-3">'+response.current_task.desc+'</div>');
 
-                    response["available"].forEach(function (data) {
-                        addStatusOption(data.title, data.statusId);
-                    });
-                    $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" form-control-sm"></select>');
-                    $('#stat_select').wrapAll('<div class="form-group stat_elem d-inline m-2"></div>');
+                    if (response.current_task.statusid !== 3) {
+                        $('#content_place').append('<div class="stat_elem d-inline m-2">@Localizer["ChangeStatusTitle"] </div>');
 
-                    $('<button>', {
-                        'class': 'stat_elem btn btn-sm btn-primary d-inline m-2',
-                        text: 'Сохранить',
-                        click: function () {
-                            $.ajax({
-                                url: '@Url.Action("ChangeStatus")', //ChangeStatus(int task_id, Statuses status)
-                                type: "POST",
-                                data: { task_id: response.current_task.id, status: $('#stat_select').val()},
-                                dataType: "json",
-                                success: function (changed_task_id) {
-                                    getTaskInfoUsingAjax(changed_task_id);
-                                },
-                                error: function () {
-                                    $('#err_msg').remove();
-                                    $('#content_place').prepend('<div id="err_msg" class="alert alert-warning">Нельзя завершить задачу</div>');
-                                }
-                            });
-                        }
-                    }).appendTo("#content_place");
-                    $('.stat_elem').wrapAll('<div class="bg-warning"></div>');
+                        response["available"].forEach(function (data) {
+                            addStatusOption(data.title, data.statusId);
+                        });
+                        $('.stat_opt').wrapAll('<select id="stat_select" style="width: 200px;" form-control-sm"></select>');
+                        $('#stat_select').wrapAll('<div class="form-group stat_elem d-inline m-2"></div>');
 
-                    $('#content_place').append('<h5 mt-4>Список подзадач: </h5>');
+                        $('<button>', {
+                            'class': 'stat_elem btn btn-sm btn-primary d-inline m-2',
+                            text: '@Localizer["StatusSaveButt"]',
+                            click: function () {
+                                $.ajax({
+                                    url: '@Url.Action("ChangeStatus")',
+                                    type: "POST",
+                                    data: { task_id: response.current_task.id, status: $('#stat_select').val() },
+                                    dataType: "json",
+                                    success: function (data) {
+                                        if (data.new_status === 3) {
+                                            location.reload();
+                                        } else {
+                                            getTaskInfoUsingAjax(data.changed_taskid);
+                                        }
+                                    },
+                                    error: function () {
+                                        $('#err_msg').remove();
+                                        $('#content_place').prepend('<div id="err_msg" class="alert alert-warning">@Localizer["ChangeStatusFail"]</div>');
+                                    }
+                                });
+                            }
+                        }).appendTo("#content_place");
+                        $('.stat_elem').wrapAll('<div class="bg-warning"></div>');
+                    } else {
+                        $('#content_place').append('<div class="d-block my-2 p-2 bg-warning">@Localizer["TaskCompliedTitle"] </div>');
+                    }
 
-                    $('<table>', {
-                        'class': 'table table-striped table-dark',
-                        'id': 'sbtsk_table'
-                    }).appendTo("#content_place");
-                    $('#sbtsk_table').append('<thead><tr><th scope="col">ID</th><th scope="col">Наименование</th><th scope="col">Трудоемкость</th></tr></thead>');
-                    $('<tbody>', {
-                        'id': 'atr_table_body'
-                    }).appendTo("#sbtsk_table");
+                    if (response.sub_tasks.length > 0) {
+                        $('#content_place').append('<div class ="text-light my-3"><h5>@Localizer["SubTasksTitle"] </h5>');
 
-                    response.sub_tasks.forEach(function (sbtsk) {
-                        addSubTasksTableRow(sbtsk.id, sbtsk.name, sbtsk.laboriousness, '#sbtsk_table');
-                    });
+                        $('<table>', {
+                            'class': 'table table-striped table-dark',
+                            'id': 'sbtsk_table'
+                        }).appendTo("#content_place");
+                        $('#sbtsk_table').append('<thead><tr><th scope="col">@Localizer["ColSubTasksId"]</th><th scope="col">@Localizer["ColSubTasksName"]</th><th scope="col">@Localizer["ColSubTasksLabor"]</th></tr></thead>');
+                        $('<tbody>', {
+                            'id': 'atr_table_body'
+                        }).appendTo("#sbtsk_table");
+
+                        response.sub_tasks.forEach(function (sbtsk) {
+                            addSubTasksTableRow(sbtsk.id, sbtsk.name, sbtsk.laboriousness, '#sbtsk_table');
+                        });
+
+                        $('#content_place').append('</div');
+
+                    } else {
+                        $('#content_place').append('<div class="py-3"><h5 class="text-light">@Localizer["NoSubTasksTitle"]</h5></div>');
+                    }
                 }
             });
 
         }
 
-        function addInfoRow(title, content, place) {
-            $(place).append('<div>' + title + ': ' + content + '</div>');
-        }
         function addAtrTableRow(atr, vl, place) {
             $(place).append('<tr><td>' + atr + '</td><td>'+vl+'</td></tr>');
         }
