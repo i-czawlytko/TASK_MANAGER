@@ -1,8 +1,11 @@
-﻿<div id="content_place">
-    <h1 class="display-4 text-uppercase text-light text-center">Создайте</h1>
-    <h1 class="display-4 text-uppercase text-light text-center">или</h1>
-    <h1 class="display-4 text-uppercase text-light text-center">выберите</h1>
-    <h1 class="display-4 text-uppercase text-light text-center">задачу</h1>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div id="content_place">
+    <h1 class="display-4 text-uppercase text-light text-center">@Localizer["Create"]</h1>
+    <h1 class="display-4 text-uppercase text-light text-center">@Localizer["Or"]</h1>
+    <h1 class="display-4 text-uppercase text-light text-center">@Localizer["Choose"]</h1>
+    <h1 class="display-4 text-uppercase text-light text-center">@Localizer["Task"]</h1>
 </div>
 
 

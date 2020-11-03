@@ -18,6 +18,8 @@ namespace TaskManager.Models
         public IQueryable<Tsk> Tasks => context.Tasks;
         public void AddTask(Tsk tsk) 
         {
+            if (tsk.ParentId != null && context.Tasks.FirstOrDefault(x => x.Id == tsk.ParentId).Status == Statuses.Completed) return; //не добавлять подзадачу, если родительская задача завершена 
+
             if(tsk.Id == 0)
             {
                 context.Tasks.Add(tsk);

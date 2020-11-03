@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-4 bg-warning p-3 m-3">
-            <a asp-action="Create" class="btn btn-sm btn-primary mb-3">Новая задача</a>
+            <a asp-action="Create" class="btn btn-sm btn-primary mb-3">@Localizer["TaskInfoTitle"]</a>
             @await Html.PartialAsync("UlPartitial", Model)
         </div>
 
@@ -49,7 +49,7 @@
                     addAtrTableRow("@Localizer["LaborAttr"]", response.current_task.total_labor, '#atr_table_body');
                     addAtrTableRow("@Localizer["InitDateAttr"]", response.current_task.initial_date, '#atr_table_body');
                     addAtrTableRow("@Localizer["CompDateAttr"]", response.current_task.completion_date, '#atr_table_body');
-                    addAtrTableRow("@Localizer["FactTimeAttr"]", response.current_task.total_actual_time ?? "Неизвестно", '#atr_table_body');
+                    addAtrTableRow("@Localizer["FactTimeAttr"]", response.current_task.total_actual_time ?? "@Localizer["ActTimeNull"]", '#atr_table_body');
 
                     $('#content_place').append('<div class="bg-light p-2 my-3">'+response.current_task.desc+'</div>');
 
@@ -97,13 +97,13 @@
                             'class': 'table table-striped table-dark',
                             'id': 'sbtsk_table'
                         }).appendTo("#content_place");
-                        $('#sbtsk_table').append('<thead><tr><th scope="col">@Localizer["ColSubTasksId"]</th><th scope="col">@Localizer["ColSubTasksName"]</th><th scope="col">@Localizer["ColSubTasksLabor"]</th></tr></thead>');
+                        $('#sbtsk_table').append('<thead><tr><th scope="col">@Localizer["ColSubTasksId"]</th><th scope="col">@Localizer["ColSubTasksName"]</th><th scope="col">@Localizer["ColSubTasksLabor"]</th><th scope="col">@Localizer["ColSubTasksActTime"]</th></tr></thead>');
                         $('<tbody>', {
                             'id': 'atr_table_body'
                         }).appendTo("#sbtsk_table");
 
                         response.sub_tasks.forEach(function (sbtsk) {
-                            addSubTasksTableRow(sbtsk.id, sbtsk.name, sbtsk.laboriousness, '#sbtsk_table');
+                            addSubTasksTableRow(sbtsk.id, sbtsk.name, sbtsk.laboriousness, sbtsk.act_time ,'#sbtsk_table');
                         });
 
                         $('#content_place').append('</div');
@@ -119,8 +119,8 @@
         function addAtrTableRow(atr, vl, place) {
             $(place).append('<tr><td>' + atr + '</td><td>'+vl+'</td></tr>');
         }
-        function addSubTasksTableRow(t_id, t_name, t_labor, place) {
-            $(place).append('<tr><td>' + t_id + '</td><td>' + t_name + '</td><td>' + t_labor + '</td></tr>');
+        function addSubTasksTableRow(t_id, t_name, t_labor,t_act_time,place) {
+            $(place).append('<tr><td>' + t_id + '</td><td>' + t_name + '</td><td>' + t_labor + '</td><td>' + (t_act_time ?? "@Localizer["ActTimeNull"]") + '</td></tr>');
         }
 
         function addStatusOption(title, id) {

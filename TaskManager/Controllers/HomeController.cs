@@ -78,7 +78,7 @@ namespace TaskManager.Controllers
                     new_status = status
                 });
             }
-            catch(ChangeStatusException ex)
+            catch(ChangeStatusException)
             {
                 return new JsonResult(null)
                 {
@@ -90,7 +90,7 @@ namespace TaskManager.Controllers
         public JsonResult TaskToAjax(int TaskId)
         {
             var Current_Task = repository.GetTask(TaskId);
-            var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name, laboriousness = u.Laboriousness });
+            var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name, laboriousness = u.Laboriousness, act_time = u.ActualInterval });
             var _Available = stat_repos.StCollect.FirstOrDefault(s => s.Status == Current_Task.Status).AvailableStatuses;
 
             var res = Json(new
@@ -102,7 +102,7 @@ namespace TaskManager.Controllers
                 status = stat_repos.StatusDict[Current_Task.Status],
                 statusid = (int)Current_Task.Status,
                 initial_date = Current_Task.CreateDate.ToString("g"),
-                completion_date = Current_Task.ComplectionDate?.ToString("g") ?? "Не завершена",
+                completion_date = Current_Task.ComplectionDate?.ToString("g") ?? _localizer["CompDateNull"],
                 total_labor = repository.GetAllSubTasks(TaskId).Sum(t => t.Laboriousness) + Current_Task.Laboriousness,
                 total_actual_time = repository.GetAllSubTasks(TaskId).Sum(t => t.ActualInterval) + Current_Task.ActualInterval,
                 },

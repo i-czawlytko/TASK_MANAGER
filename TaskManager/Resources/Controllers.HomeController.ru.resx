@@ -117,12 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CompDateNull" xml:space="preserve">
+    <value>Не завершена</value>
+    <comment>Информация о дате завершения, если задача не завершена</comment>
+  </data>
   <data name="TaskCompleted" xml:space="preserve">
     <value>Задача была завершена</value>
     <comment>Сообщение о завершении задачи</comment>
   </data>
   <data name="TaskModified" xml:space="preserve">
-    <value>Задача была отредактирована</value>
+    <value>Данные изменены</value>
     <comment>Сообщение о том, что задача отредактирована</comment>
   </data>
 </root>

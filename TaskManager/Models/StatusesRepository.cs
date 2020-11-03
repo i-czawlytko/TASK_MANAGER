@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Localization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,13 @@ namespace TaskManager.Models
 {
     public class StatusesRepository
     {
-        public List<StatusesInfo> StCollect => new List<StatusesInfo>
+        private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
+        public StatusesRepository(IStringLocalizer<SharedResource> sharedLocalizer)
         {
+            _sharedLocalizer = sharedLocalizer;
+        }
+        public List<StatusesInfo> StCollect => new List<StatusesInfo>
+        {                   
                     new StatusesInfo
                     {
                         Status = Statuses.Assigned,
@@ -19,7 +25,7 @@ namespace TaskManager.Models
                             new StatusViewModel
                             {
                                 StatusId= 1,
-                                Title = "Выполняется"
+                                Title = _sharedLocalizer["InProgress"]
                             }
                         }
                     },
@@ -32,12 +38,12 @@ namespace TaskManager.Models
                             new StatusViewModel
                             {
                                 StatusId= 2,
-                                Title = "Отложена"
+                                Title = _sharedLocalizer["Suspended"]
                             },
                             new StatusViewModel
                             {
                                 StatusId= 3,
-                                Title = "Завершена"
+                                Title = _sharedLocalizer["Complited"]
                             }
                         }
                     },
@@ -50,7 +56,7 @@ namespace TaskManager.Models
                             new StatusViewModel
                             {
                                 StatusId= 1,
-                                Title = "Выполняется"
+                                Title = _sharedLocalizer["InProgress"]
                             }
                         }
                     },
@@ -65,10 +71,10 @@ namespace TaskManager.Models
 
         public Dictionary<Statuses, string> StatusDict => new Dictionary<Statuses, string>
         {
-            {Statuses.Assigned, "Назначена" },
-            {Statuses.InProgress, "Выполняется" },
-            {Statuses.Suspended, "Отложена" },
-            {Statuses.Completed, "Завершена" }
+            {Statuses.Assigned, _sharedLocalizer["Assigned"] },
+            {Statuses.InProgress, _sharedLocalizer["InProgress"] },
+            {Statuses.Suspended, _sharedLocalizer["Suspended"] },
+            {Statuses.Completed, _sharedLocalizer["Complited"] }
         };
     }
 
