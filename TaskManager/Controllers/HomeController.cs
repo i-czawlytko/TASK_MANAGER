@@ -98,6 +98,7 @@ namespace TaskManager.Controllers
                 current_task = new {
                 id = Current_Task.Id, 
                 name = Current_Task.Name,
+                executors = Current_Task.Executors,
                 desc = Current_Task.Description,
                 status = stat_repos.StatusDict[Current_Task.Status],
                 statusid = (int)Current_Task.Status,

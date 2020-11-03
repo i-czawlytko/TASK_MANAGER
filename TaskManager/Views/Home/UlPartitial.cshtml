@@ -4,7 +4,7 @@
 <ul style="margin-left: 10px; padding: 0;">
     @foreach (var t in Model)
     {
-    <li style="list-style-type: none" class="m-2">
+    <li style="list-style-type: none; white-space: nowrap;" class="m-2">
         <i class="fa fa-suitcase" aria-hidden="true"></i>
 
         <input type="button" value="@t.Name" class="btn btn-sm btn-dark" onclick="getTaskInfoUsingAjax(@t.Id)">

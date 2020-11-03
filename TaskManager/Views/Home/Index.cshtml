@@ -9,8 +9,8 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-4 bg-warning p-3 m-3">
-            <a asp-action="Create" class="btn btn-sm btn-primary mb-3">@Localizer["TaskInfoTitle"]</a>
+        <div class="col-sm-4 bg-warning p-3 m-3" style="overflow-x: auto">
+            <a asp-action="Create" class="btn btn-sm btn-primary mb-3">@Localizer["NewTask"]</a>
             @await Html.PartialAsync("UlPartitial", Model)
         </div>
 
@@ -45,6 +45,7 @@
                     }).appendTo("#atr_table");
                     addAtrTableRow("@Localizer["IdAttr"]", response.current_task.id, '#atr_table_body');
                     addAtrTableRow("@Localizer["NameAttr"]", response.current_task.name, '#atr_table_body');
+                    addAtrTableRow("@Localizer["ExecAttr"]", response.current_task.executors, '#atr_table_body');                   
                     addAtrTableRow("@Localizer["StatusAttr"]", response.current_task.status, '#atr_table_body');
                     addAtrTableRow("@Localizer["LaborAttr"]", response.current_task.total_labor, '#atr_table_body');
                     addAtrTableRow("@Localizer["InitDateAttr"]", response.current_task.initial_date, '#atr_table_body');

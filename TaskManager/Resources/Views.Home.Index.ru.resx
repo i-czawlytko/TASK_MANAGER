@@ -149,6 +149,10 @@
     <value>Дата завершения</value>
     <comment>Строки таблицы атрибутов задачи</comment>
   </data>
+  <data name="ExecAttr" xml:space="preserve">
+    <value>Исполнители</value>
+    <comment>Строки таблицы атрибутов задачи</comment>
+  </data>
   <data name="FactTimeAttr" xml:space="preserve">
     <value>Факт. время выполнения</value>
     <comment>Строки таблицы атрибутов задачи</comment>

@@ -26,7 +26,7 @@ namespace TaskManager.Models
                             Description = "Самая крупная задача",
                             Laboriousness = 10,
                             Status = Statuses.Assigned,
-                            CreateDate = new DateTime(1, 11, 2020),
+                            CreateDate = new DateTime(2020, 11, 1),
                             ParentId = null
                         },
                         new Tsk
@@ -36,7 +36,7 @@ namespace TaskManager.Models
                             Description = "Подзадача основной задачи",
                             Laboriousness = 10,
                             Status = Statuses.Assigned,
-                            CreateDate = new DateTime(1, 11, 2020),
+                            CreateDate = new DateTime(2020, 11 ,1),
                             ParentId = 1
                         },
                         new Tsk
@@ -46,10 +46,11 @@ namespace TaskManager.Models
                             Description = "Вторая подзадача основной задачи",
                             Laboriousness = 10,
                             Status = Statuses.Assigned,
-                            CreateDate = new DateTime(1, 11, 2020),
+                            CreateDate = new DateTime(2020, 11, 1),
                             ParentId = 1
                         }
                     );
+                    context.SaveChanges();
                 }
             }
         }
