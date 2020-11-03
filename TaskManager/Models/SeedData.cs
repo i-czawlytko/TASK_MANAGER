@@ -17,7 +17,8 @@ namespace TaskManager.Models
             {
                 var context = serviceScope.ServiceProvider.GetService<TaskDbContext>();
                 context.Database.Migrate();
-                if (!context.Tasks.Any()) {
+                if (!context.Tasks.Any())
+                {
                     context.Tasks.AddRange(
                         new Tsk
                         {
@@ -28,27 +29,30 @@ namespace TaskManager.Models
                             Status = Statuses.Assigned,
                             CreateDate = new DateTime(2020, 11, 1),
                             ParentId = null
-                        },
+                        });
+                    context.SaveChanges();
+                    context.Tasks.AddRange(
                         new Tsk
                         {
                             Name = "Первая подзадача",
-                            Executors = "Иванов",
-                            Description = "Подзадача основной задачи",
+                            Executors = "Смирнов",
+                            Description = "Задача поменьше",
                             Laboriousness = 10,
                             Status = Statuses.Assigned,
-                            CreateDate = new DateTime(2020, 11 ,1),
-                            ParentId = 1
+                            CreateDate = new DateTime(2020, 11, 1),
+                            ParentId = context.Tasks.FirstOrDefault().Id
                         },
                         new Tsk
                         {
                             Name = "Вторая подзадача",
                             Executors = "Петров",
-                            Description = "Вторая подзадача основной задачи",
+                            Description = "Еще задача поменьше",
                             Laboriousness = 10,
                             Status = Statuses.Assigned,
                             CreateDate = new DateTime(2020, 11, 1),
-                            ParentId = 1
+                            ParentId = context.Tasks.FirstOrDefault().Id
                         }
+
                     );
                     context.SaveChanges();
                 }

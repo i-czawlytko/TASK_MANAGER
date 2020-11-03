@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
 
 
 namespace TaskManager.Models
@@ -25,14 +23,14 @@ namespace TaskManager.Models
 
         public IEnumerable<Tsk> Children { get; set; }
 
-        [MaxLength(30, ErrorMessage ="Слишком длинное наименование")]
-        [Required(ErrorMessage ="Пожалуйста, введите название")]
+        [MaxLength(30, ErrorMessage ="NameLenghtError")]
+        [Required(ErrorMessage ="NameRequired")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста, введите описание")]
+        [Required(ErrorMessage = "DescRequired")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста, введите исполнителей")]
+        [Required(ErrorMessage = "ExecRequired")]
         public string Executors { get; set; }
 
         [Required]
@@ -42,8 +40,8 @@ namespace TaskManager.Models
         public Statuses Status { get; set; }
 
 
-        [Required(ErrorMessage = "Пожалуйста, введите трудоемкость")]
-        [Range(1,int.MaxValue, ErrorMessage ="Введите число больше нуля")]
+        [Required(ErrorMessage = "LaborRequired")]
+        [Range(1,int.MaxValue, ErrorMessage ="WrongNum")]
         public int Laboriousness { get; set; }
 
         [NotMapped]

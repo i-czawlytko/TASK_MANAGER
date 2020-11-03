@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TaskManager.Infrastructure;
 using TaskManager.Models;
-using TaskManager.ViewModels;
-using Microsoft.AspNetCore.Http;
+
 using System.Net;
 using Microsoft.Extensions.Localization;
 
@@ -93,7 +87,7 @@ namespace TaskManager.Controllers
             var SubTasks = repository.GetAllSubTasks(TaskId).Select(u => new { id = u.Id, name = u.Name, laboriousness = u.Laboriousness, act_time = u.ActualInterval });
             var _Available = stat_repos.StCollect.FirstOrDefault(s => s.Status == Current_Task.Status).AvailableStatuses;
 
-            var res = Json(new
+            return Json(new
             {
                 current_task = new {
                 id = Current_Task.Id, 
@@ -111,8 +105,6 @@ namespace TaskManager.Controllers
                 sub_tasks = SubTasks,
                 available = _Available
             });
-
-            return res;
         }
 
     }

@@ -25,10 +25,13 @@
 
         @if (!t.Children.Any())
         {
-            <form id="delete_form" class="d-inline" asp-action="Delete" method="post">
+            <form class="d-inline" asp-action="Delete" method="post">
                 <input type="hidden" name="id" value="@t.Id" />
-                <i class="fa fa-minus-square" aria-hidden="true" onclick="delete_form.submit()" style="cursor:pointer;color:red"></i>
+                <i class="fa fa-minus-square" aria-hidden="true" onclick="submitFunc(this)" style="cursor:pointer;color:red"></i>
             </form>
+            <script>
+                function submitFunc(currentElem) { currentElem.parentNode.submit(); }
+            </script>
         }
 
         @if (t.Children.Any())

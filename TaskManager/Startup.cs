@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
-using TaskManager.Infrastructure;
+
 using TaskManager.Models;
 
 namespace TaskManager
@@ -31,7 +26,7 @@ namespace TaskManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddControllersWithViews().AddViewLocalization();
+            services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -59,9 +54,7 @@ namespace TaskManager
 
             var supportedCultures = new[]
             {
-                new CultureInfo("en"),
-                new CultureInfo("ru"),
-                new CultureInfo("de")
+                new CultureInfo("ru")
             };
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
